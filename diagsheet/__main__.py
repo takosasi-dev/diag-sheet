@@ -1,4 +1,4 @@
-# CLI(§9.1)。convert・render・check・--selftest を受け、終了コード 0〜4 を返す。
+# CLI(§9.1)。convert・render・check・--selftest を受け、終了コード 0〜4 を返す。gui は画面を開く。
 # 流れは「出力先の確認 → 読む → 写す → 検査 → 書き出す」。途中で止まれば出力を1つも残さない。
 # 引数の誤りは argparse の既定の 2 ではなく 1 で終える(2 は「知らない形」に使うため)。
 
@@ -8,6 +8,7 @@ import argparse
 import contextlib
 import io
 import json
+import os
 import sys
 import tempfile
 from collections.abc import Callable, Mapping, Sequence
@@ -47,6 +48,7 @@ from diagsheet.model import (
     load_bad_word,
 )
 from diagsheet.render_md import render
+from diagsheet.resources import app_dir, is_frozen
 
 
 class Adapter(Protocol):
@@ -80,9 +82,12 @@ class _Parser(argparse.ArgumentParser):
         raise _ArgError(f"{self.format_usage()}diagsheet: 引数の誤り: {message}")
 
 
+NO_VIOLATION = "違反なし"
+
+
 def default_out_dir() -> Path:
-    """既定の出力先。パッケージの1つ上(リポジトリ直下)の out フォルダ。"""
-    return Path(__file__).resolve().parent.parent / "out"
+    """既定の出力先。パッケージの1つ上(リポジトリ直下)の out フォルダ。exe なら exe の隣の out。"""
+    return app_dir() / "out"
 
 
 def now_iso() -> str:
@@ -146,6 +151,23 @@ def load_checked_sheet(sheet_path: Path) -> dict[str, Any]:
     if violations or not isinstance(sheet, dict):
         raise CheckError(violations or ["シートが JSON のオブジェクトでない"])
     return sheet
+
+
+def check_file(sheet_path: Path) -> list[str]:
+    """シートの JSON を読み、違反の一覧を返す。空なら違反なし。"""
+    return check_sheet(parse_json(read_bytes(sheet_path), sheet_path.name))
+
+
+def violation_summary(count: int) -> str:
+    return f"diagsheet: 違反 {count}件"
+
+
+def error_lines(exc: DiagSheetError) -> list[str]:
+    """エラーを画面に出す行にする。最後の行が要約。CLI と GUI で同じ文を出すためにここに置く。"""
+    if isinstance(exc, CheckError):
+        summary = f"diagsheet: シートの形に違反 {len(exc.violations)}件。何も書いていない"
+        return [*exc.violations, summary]
+    return [f"diagsheet: {exc}"]
 
 
 def render_file(
@@ -281,7 +303,19 @@ def _build_parser() -> _Parser:
 
     checking = sub.add_parser("check", help="シートの JSON の形を検査する")
     checking.add_argument("sheet", help=".sheet.json のパス")
+
+    window = sub.add_parser("gui", help="画面(GUI)を開く")
+    # 動作確認用。--smoke は窓を作ってすぐ閉じる。--demo は合成データを表示する。
+    window.add_argument("--smoke", action="store_true", help=argparse.SUPPRESS)
+    window.add_argument("--demo", action="store_true", help=argparse.SUPPRESS)
     return parser
+
+
+def _ensure_streams() -> None:
+    """コンソールの無い exe では stdout・stderr が None。print で落ちないよう捨て先を付ける。"""
+    for name in ("stdout", "stderr"):
+        if getattr(sys, name) is None:
+            setattr(sys, name, open(os.devnull, "w", encoding="utf-8"))  # noqa: SIM115
 
 
 def _relax_streams() -> None:
@@ -297,15 +331,19 @@ def _run(args: argparse.Namespace) -> int:
         if args.command is not None:
             raise InputError("--selftest はほかのコマンドと一緒に使えない")
         return selftest()
+    if args.command == "gui":
+        # tkinter を読むのは画面を開くときだけにする。
+        from diagsheet import gui
+
+        return gui.run(smoke=args.smoke, demo=args.demo)
     if args.command == "check":
-        sheet = parse_json(read_bytes(Path(args.sheet)), Path(args.sheet).name)
-        violations = check_sheet(sheet)
+        violations = check_file(Path(args.sheet))
         for line in violations:
             print(line)
         if violations:
-            print(f"diagsheet: 違反 {len(violations)}件", file=sys.stderr)
+            print(violation_summary(len(violations)), file=sys.stderr)
             return EXIT_CHECK
-        print("違反なし")
+        print(NO_VIOLATION)
         return EXIT_OK
     if args.command in ("convert", "render"):
         out_dir = Path(args.out) if args.out else default_out_dir()
@@ -320,22 +358,22 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    _ensure_streams()
     _relax_streams()
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if not arguments and is_frozen():
+        # exe を引数なしで開いた(ダブルクリックした)ときは画面を出す。引数があれば CLI として動く。
+        arguments = ["gui"]
     try:
-        args = _build_parser().parse_args(argv)
+        args = _build_parser().parse_args(arguments)
     except _ArgError as exc:
         print(exc, file=sys.stderr)
         return EXIT_IO
     try:
         return _run(args)
-    except CheckError as exc:
-        for line in exc.violations:
-            print(line, file=sys.stderr)
-        summary = f"diagsheet: シートの形に違反 {len(exc.violations)}件。何も書いていない"
-        print(summary, file=sys.stderr)
-        return exc.exit_code
     except DiagSheetError as exc:
-        print(f"diagsheet: {exc}", file=sys.stderr)
+        for line in error_lines(exc):
+            print(line, file=sys.stderr)
         return exc.exit_code
 
 

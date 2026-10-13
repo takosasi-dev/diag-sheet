@@ -42,7 +42,7 @@ def _cell(text: str) -> str:
     return re.sub(r"\r\n|\r|\n", "<br>", escaped)
 
 
-def _scalar_text(value: object) -> str:
+def scalar_text(value: object) -> str:
     if value is None:
         return ""
     if isinstance(value, str):
@@ -50,15 +50,15 @@ def _scalar_text(value: object) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
-def _value_text(item: Mapping[str, Any]) -> str:
-    text = _scalar_text(item.get("value"))
+def value_text(item: Mapping[str, Any]) -> str:
+    text = scalar_text(item.get("value"))
     unit = item.get("unit")
     return f"{text} {unit}" if text and isinstance(unit, str) and unit else text
 
 
-def _verdict_text(item: Mapping[str, Any]) -> str:
-    label = _scalar_text(item.get("verdict_label"))
-    raw = _scalar_text(item.get("verdict_raw"))
+def verdict_text(item: Mapping[str, Any]) -> str:
+    label = scalar_text(item.get("verdict_label"))
+    raw = scalar_text(item.get("verdict_raw"))
     return label if label == raw else f"{label}({raw})"
 
 
@@ -81,54 +81,82 @@ def _section(category: str, word: str, items: Sequence[Mapping[str, Any]]) -> li
     if not items:
         return [*lines, "なし"]
     if category in _NO_VALUE:
-        rows = [[str(i["name"]), _scalar_text(i.get("reason")), str(i["from"])] for i in items]
+        rows = [[str(i["name"]), scalar_text(i.get("reason")), str(i["from"])] for i in items]
         return lines + _table(("項目", "理由", "元の場所"), rows)
     if category in _JUDGED:
         rows = [
             [
                 str(i["name"]),
-                _value_text(i),
+                value_text(i),
                 CONFIDENCE_WORDS[i["confidence"]],
-                _verdict_text(i),
-                _scalar_text(i.get("evidence")),
+                verdict_text(i),
+                scalar_text(i.get("evidence")),
             ]
             for i in items
         ]
         return lines + _table(("項目", "値", "確度", "ツールの判定", "根拠"), rows)
-    rows = [[str(i["name"]), _value_text(i), CONFIDENCE_WORDS[i["confidence"]]] for i in items]
+    rows = [[str(i["name"]), value_text(i), CONFIDENCE_WORDS[i["confidence"]]] for i in items]
     return lines + _table(("項目", "値", "確度"), rows)
 
 
 def _overall_line(overall: Mapping[str, Any]) -> str:
     head = str(overall["value"])
     if overall.get("score") is not None:
-        head += f" / {_scalar_text(overall['score'])} 点"
+        head += f" / {scalar_text(overall['score'])} 点"
     excluded = "、".join(str(name) for name in overall["excluded"]) or "なし"
     used = f"{overall['used']}/{overall['total']}"
-    return f"- 総合(ツールの採点): {head}(採点に使った項目 {used}。外れた項目: {excluded})"
+    return f"総合(ツールの採点): {head}(採点に使った項目 {used}。外れた項目: {excluded})"
 
 
-def render(sheet: Mapping[str, Any], bad_word: str) -> str:
-    """シートを Markdown にする。sheet は check_sheet で違反なしを確かめた物を渡す。"""
-    words = display_words(bad_word)
-    items: list[Mapping[str, Any]] = list(sheet["items"])
+def sheet_title(sheet: Mapping[str, Any]) -> str:
+    run = sheet["run"]
+    return _one_line(f"診断シート {run['subject']} {run['label']}")
+
+
+def summary_lines(sheet: Mapping[str, Any]) -> list[str]:
+    """題名の下に並べる行(計測日時・ツールと版・元ファイル・条件・総合)。GUI も同じ文を出す。"""
+    run = sheet["run"]
+    source = sheet["source"]
+    measured, _ = _moment(str(run["measured_at"]), "%Y-%m-%d %H:%M:%S")
+    version = "不明" if sheet["tool_version"] is None else _one_line(str(sheet["tool_version"]))
+    conditions = " / ".join(
+        f"{key} {_one_line(scalar_text(value))}" for key, value in run["conditions"].items()
+    )
+    lines = [
+        f"計測日時: {measured}",
+        f"ツール: {sheet['tool']} 版 {version}(出所: {sheet['tool_version_from']})"
+        f" / アダプタ {sheet['adapter_version']} / 形の版 {sheet['diagsheet']}",
+        f"元ファイル: {_one_line(str(source['file']))}"
+        f"(SHA-256 先頭12桁 {str(source['sha256'])[:12]})",
+        f"条件: {conditions or 'なし'}",
+    ]
+    overall = sheet.get("overall")
+    if overall is not None:
+        lines.append(_overall_line(overall))
+    return lines
+
+
+def group_items(items: Sequence[Mapping[str, Any]]) -> dict[str, list[Mapping[str, Any]]]:
+    """項目を区分ごとに分ける。区分の順は CATEGORY_ORDER、区分の中は元の並びのまま。"""
     grouped: dict[str, list[Mapping[str, Any]]] = {category: [] for category in CATEGORY_ORDER}
     for item in items:
         category = category_of(item["status"], item["verdict"])
         if category is None:
             raise ValueError(f"区分を決められない項目: {item.get('id')}")
         grouped[category].append(item)
+    return grouped
+
+
+def render(sheet: Mapping[str, Any], bad_word: str) -> str:
+    """シートを Markdown にする。sheet は check_sheet で違反なしを確かめた物を渡す。"""
+    words = display_words(bad_word)
+    items: list[Mapping[str, Any]] = list(sheet["items"])
+    grouped = group_items(items)
 
     run = sheet["run"]
-    source = sheet["source"]
-    tool = str(sheet["tool"])
-    title = _one_line(f"診断シート {run['subject']} {run['label']}")
+    title = sheet_title(sheet)
     measured, measured_ok = _moment(str(run["measured_at"]), "%Y-%m-%d %H:%M:%S")
     created, _ = _moment(str(sheet["created_at"]), "%Y-%m-%d %H:%M")
-    version = "不明" if sheet["tool_version"] is None else _one_line(str(sheet["tool_version"]))
-    conditions = " / ".join(
-        f"{key} {_one_line(_scalar_text(value))}" for key, value in run["conditions"].items()
-    )
 
     lines = [
         "---",
@@ -137,22 +165,12 @@ def render(sheet: Mapping[str, Any], bad_word: str) -> str:
         f"measured: {measured if measured_ok else _yaml_scalar(measured)}",
         "tags:",
         "  - 診断シート",
-        f"  - {TOOL_TAGS[tool]}",
+        f"  - {TOOL_TAGS[str(sheet['tool'])]}",
         f"diagsheet: {sheet['diagsheet']}",
         "---",
         f"# {title}",
         "",
-        f"- 計測日時: {measured}",
-        f"- ツール: {tool} 版 {version}(出所: {sheet['tool_version_from']})"
-        f" / アダプタ {sheet['adapter_version']} / 形の版 {sheet['diagsheet']}",
-        f"- 元ファイル: {_one_line(str(source['file']))}"
-        f"(SHA-256 先頭12桁 {str(source['sha256'])[:12]})",
-        f"- 条件: {conditions or 'なし'}",
-    ]
-    overall = sheet.get("overall")
-    if overall is not None:
-        lines.append(_overall_line(overall))
-    lines += [
+        *(f"- {line}" for line in summary_lines(sheet)),
         "",
         "| " + " | ".join(words[category] for category in CATEGORY_ORDER) + " |",
         "|" + "---|" * len(CATEGORY_ORDER),
@@ -163,6 +181,7 @@ def render(sheet: Mapping[str, Any], bad_word: str) -> str:
         lines += _section(category, words[category], grouped[category])
 
     lines += ["", "---", f"- {FOOTER_LINE}"]
+    overall = sheet.get("overall")
     if overall is not None and overall.get("note"):
         lines.append(f"- 注記(総合): {_one_line(str(overall['note']))}")
     lines += [

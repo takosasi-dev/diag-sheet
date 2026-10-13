@@ -5,10 +5,13 @@ out/
 __pycache__/
 *.py[cod]
 *.egg-info/
-build/
-dist/
 .venv/
 venv/
+
+# exe のビルド(PyInstaller)。exe と作業ファイルはリポジトリに入れない
+build/
+dist/
+*.spec
 
 # 道具のキャッシュ
 .mypy_cache/

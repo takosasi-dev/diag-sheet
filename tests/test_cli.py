@@ -149,7 +149,8 @@ def test_other_bad_word_changes_only_the_heading(tmp_path: Path) -> None:
 
 def test_repository_text_files_are_utf8_lf_without_bom() -> None:
     suffixes = {".py", ".json", ".toml", ".md", ".gitignore", ".gitattributes", ""}
-    skipped = {".git", "out", "__pycache__", ".mypy_cache", ".ruff_cache", ".pytest_cache"}
+    skipped = {".git", "out", "build", "dist", "__pycache__"}
+    skipped |= {".mypy_cache", ".ruff_cache", ".pytest_cache"}
     checked = 0
     for path in sorted(REPO_DIR.rglob("*")):
         if not path.is_file() or skipped & set(path.relative_to(REPO_DIR).parts):

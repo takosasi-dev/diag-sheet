@@ -10,8 +10,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
+from diagsheet.resources import resource_path
+
 SHAPE_VERSION: Final = 1
-MAPPINGS_DIR: Final = Path(__file__).resolve().parent / "mappings"
+# exe でも同梱の物だけを読む。exe の隣に mappings を置いても読まない(判定の出所を1つにする)。
+MAPPINGS_DIR: Final = resource_path("mappings")
 
 EXIT_OK: Final = 0
 EXIT_IO: Final = 1
