@@ -1,0 +1,26 @@
+{
+  "label": "synthetic counters",
+  "timestamp": "2026-01-02T03:04:05",
+  "duration_s": 4,
+  "interval_s": 0.5,
+  "snapshot": {
+    "cores": 4,
+    "smart": {
+      "rows": [
+        {"DeviceId": "0", "Name": "SYNTH-DISK-NAME", "Wear": 3, "Temperature": 40, "PowerOnHours": 1234, "ReadErrorsUncorrected": 0, "WriteErrorsUncorrected": 0, "StartStopCycleCount": 10},
+        {"DeviceId": "1", "Name": "SYNTH-DISK-NAME-2", "Wear": 0, "Temperature": 35, "PowerOnHours": 56, "ReadErrorsUncorrected": null, "WriteErrorsUncorrected": null, "StartStopCycleCount": null}
+      ],
+      "available": true,
+      "reason": null
+    },
+    "unavailable_counters": {"freq_pct": "0xC0000BB8"}
+  },
+  "samples": [],
+  "stats": {
+    "cpu_pct": {"n": 8, "p50": 1.0, "p95": 2.0, "p99": 3.0, "min": 0.5, "max": 4.0, "mean": 1.5},
+    "hard_faults": null
+  },
+  "events": [],
+  "findings": [],
+  "event_rate_per_min": 0.0
+}

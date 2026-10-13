@@ -1,0 +1,53 @@
+{
+  "label": "synthetic",
+  "timestamp": "2026-01-02T03:04:05",
+  "duration_s": 4,
+  "interval_s": 0.25,
+  "snapshot": {
+    "disks": [
+      {"DeviceId": "0", "FriendlyName": "SYNTH-DISK-NAME", "MediaType": "SSD", "BusType": "NVMe", "HealthStatus": "Healthy", "OperationalStatus": "OK", "SizeGB": 100}
+    ],
+    "volumes": [
+      {"DriveLetter": "C", "FileSystem": "NTFS", "SizeGB": 100.0, "FreeGB": 50.0, "FreePct": 50.0, "HealthStatus": "Healthy"}
+    ],
+    "os_disk": 0,
+    "ram_gb": 16.0,
+    "pagefile": [
+      {"Name": "SYNTH-PAGEFILE-NAME", "AllocatedBaseSize": 1024, "CurrentUsage": 10, "PeakUsage": 20}
+    ],
+    "pagefile_auto": true,
+    "power_plan": "SYNTH-POWER-PLAN",
+    "by_process": [
+      {"Name": "SYNTH-PROCESS-NAME", "Count": 2, "PrivateMB": 100, "WorkingMB": 80, "OldestHours": 1.5}
+    ],
+    "process_count": 10,
+    "private_total_gb": 1.0,
+    "commit_gb": 2,
+    "commit_limit_gb": 20.0,
+    "free_physical_gb": 8.0,
+    "uptime_h": 3.0,
+    "cores": 4,
+    "storage_drivers": [
+      {"DeviceName": "SYNTH-DRIVER-NAME", "DriverVersion": "1.0", "DriverDate": "2026-01-01"}
+    ],
+    "smart": {"rows": [], "available": false, "reason": "権限不足"}
+  },
+  "samples": [
+    {"t": 0.0, "cpu_pct": 1.0, "dpc_pct": 0.1, "disk_read_s_C": 0.001}
+  ],
+  "stats": {
+    "cpu_pct": {"n": 16, "p50": 1.0, "p95": 2.0, "p99": 3.0, "min": 0.5, "max": 4.0, "mean": 1.5},
+    "dpc_pct": {"n": 16, "p50": 0.1, "p95": 0.2, "p99": 0.3, "min": 0.0, "max": 0.4, "mean": 0.15},
+    "disk_read_s_C": {"n": 16, "p50": 0.001, "p95": 0.002, "p99": 0.003, "min": 0.0, "max": 0.2, "mean": 0.0015},
+    "disk_write_s_C": {"n": 16, "p50": 0.001, "p95": 0.002, "p99": 0.003, "min": 0.0, "max": 0.004, "mean": 0.0015}
+  },
+  "events": [
+    {"t": 1.0, "kinds": ["disk_read_C"], "detail": "SYNTH-EVENT-DETAIL", "context": {"cpu_pct": 1.0}}
+  ],
+  "findings": [
+    {"severity": "high", "title": "合成の所見 A", "evidence": "最大 200ms / 該当 1回", "meaning": "合成の説明 A", "action": "合成の対処 A"},
+    {"severity": "medium", "title": "合成の所見 B", "evidence": "p95 90.0%", "meaning": "合成の説明 B", "action": ""},
+    {"severity": "ok", "title": "合成の所見 C", "evidence": "p99 0.3% / 最大 0.4%", "meaning": "", "action": ""}
+  ],
+  "event_rate_per_min": 15.0
+}

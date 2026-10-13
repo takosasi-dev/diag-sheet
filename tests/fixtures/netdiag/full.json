@@ -1,0 +1,65 @@
+{
+  "label": "synthetic",
+  "timestamp": "2026-01-02T03:04:05",
+  "wifi": {"available": true, "ssid": "SYNTH-SSID", "signal_pct": 80},
+  "ipv6": {
+    "global_addresses": ["2001:db8::1"],
+    "has_global_address": true,
+    "default_route": {"NextHop": "fe80::1", "InterfaceAlias": "SYNTH-ALIAS"},
+    "has_default_route": true,
+    "egress_reachable": true
+  },
+  "gateway_ip": "192.0.2.1",
+  "latency": {
+    "gateway": {"loss_pct": 0, "min_ms": 1, "max_ms": 3, "avg_ms": 2},
+    "1.1.1.1": {"loss_pct": 0, "min_ms": 8, "max_ms": 12, "avg_ms": 10},
+    "8.8.8.8": {"loss_pct": 0, "min_ms": 9, "max_ms": 13, "avg_ms": 11}
+  },
+  "traceroute": {"1.1.1.1": {"hops": [{"hop": 1, "ip": "192.0.2.1"}]}},
+  "public_ip_info": {"ip": "203.0.113.7", "org": "SYNTH-ISP", "city": "SYNTH-CITY", "region": "SYNTH-REGION", "country": "ZZ"},
+  "dns": {"router": {"avg_ms": 5.0, "min_ms": 4.0, "max_ms": 6.0, "trials_ok": 5, "trials_total": 5}},
+  "path_mtu": {"mtu": 1500, "max_payload": 1472, "interpretation": "合成の接続方式", "note": "合成の MTU 注記"},
+  "jitter": {"jitter_ms": 1.25, "avg_rtt_ms": 10.5, "loss_pct": 0.0, "samples": 20, "mos": 4.3, "r_value": 90.1, "quality": "優 (合成の文)"},
+  "link_stats": {"tcp_segments_sent": 1000, "tcp_segments_retransmitted": 5, "tcp_retransmit_pct": 0.5},
+  "nat": {"nat_type": "合成の NAT タイプ", "external_ip": "203.0.113.7", "external_ports": [40000], "local_ports": [50000]},
+  "throughput": {
+    "single": {"mbps": 300.5, "bytes": 1000, "elapsed_s": 8.0},
+    "parallel6": {"mbps": 600.25, "bytes": 2000, "elapsed_s": 8.0, "streams": 6}
+  },
+  "upload": {
+    "single": {"mbps": 100.5, "bytes": 1000, "elapsed_s": 8.0},
+    "parallel6": {"mbps": 200.75, "bytes": 2000, "elapsed_s": 8.0, "streams": 6}
+  },
+  "ip_version_compare": {
+    "ipv4": {"address": "203.0.113.20", "tcp_handshake_ms": 10.0, "peer": "203.0.113.20", "mbps": 250.0, "bytes": 1000},
+    "ipv6": {"address": "2001:db8::20", "tcp_handshake_ms": 9.0, "peer": "2001:db8::20", "mbps": 260.0, "bytes": 1000}
+  },
+  "time_sync": {"offset_ms": -12.5, "abs_offset_ms": 12.5, "verdict": "合成の時刻の文", "note": "合成の時刻の注記"},
+  "quic": {"hosts": [], "usable": true, "verdict": "合成の QUIC の文"},
+  "dnsbl": {"ip": "203.0.113.7", "entries": [], "has_problem": false, "verdict": "合成の DNSBL の文"},
+  "bufferbloat": {
+    "idle_latency": {"loss_pct": 0, "min_ms": 8, "max_ms": 12, "avg_ms": 10},
+    "loaded_latency": {"loss_pct": 1, "min_ms": 10, "max_ms": 40, "avg_ms": 20},
+    "increase_ms": 10,
+    "increase_pct": 100.0,
+    "rpm_approx": 3000,
+    "rpm_note": "合成の RPM 注記"
+  },
+  "grade": {
+    "grade": "B",
+    "score": 82.5,
+    "earned": 82,
+    "possible": 100,
+    "contract_mbps": 1000,
+    "breakdown": [
+      {"項目": "下り速度(契約比)", "実測": "600 Mbps / 契約1000 Mbps", "点": 21, "満点": 25},
+      {"項目": "上り速度(契約比)", "実測": "201 Mbps / 契約1000 Mbps", "点": 9, "満点": 20},
+      {"項目": "遅延", "実測": "10 ms", "点": 15, "満点": 15},
+      {"項目": "ジッター", "実測": "1.25 ms", "点": 10, "満点": 10},
+      {"項目": "負荷時のパケット損失", "実測": "1 %", "点": 12, "満点": 15},
+      {"項目": "バッファブロート(負荷時の遅延増加)", "実測": "+100.0 %", "点": 5, "満点": 10},
+      {"項目": "TCP再送率", "実測": "0.5 %", "点": 5, "満点": 5}
+    ],
+    "comment": "合成のコメント"
+  }
+}

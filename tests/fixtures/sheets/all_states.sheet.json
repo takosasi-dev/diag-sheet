@@ -1,0 +1,79 @@
+{
+  "diagsheet": 1,
+  "tool": "padlab",
+  "tool_version": "v0.0.0-synthetic",
+  "tool_version_from": "指定",
+  "adapter_version": "0.1.0",
+  "created_at": "2026-01-02T03:04:05+09:00",
+  "source": {
+    "file": "synthetic.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "shape": "synthetic"
+  },
+  "run": {
+    "label": "all states",
+    "measured_at": "2026-01-02T03:04:05",
+    "subject": "合成",
+    "conditions": {"mode": "synthetic", "count": 3}
+  },
+  "overall": null,
+  "counts": {"bad": 1, "warn": 1, "failed": 1, "unchecked": 1, "not_applicable": 1, "ok": 1, "none": 2},
+  "items": [
+    {
+      "id": "synthetic.bad", "name": "合成の項目(異常)", "unit": null,
+      "status": "measured", "value": null, "confidence": "measured",
+      "verdict": "bad", "verdict_raw": "high", "verdict_label": "要対処",
+      "reason": null, "evidence": "合成の根拠 | 縦棒つき", "note": "合成の注記", "action": "合成の対処",
+      "from": "synthetic[0]"
+    },
+    {
+      "id": "synthetic.warn", "name": "合成の項目(注意)", "unit": "ms",
+      "status": "measured", "value": 12.5, "confidence": "measured",
+      "verdict": "warn", "verdict_raw": "medium", "verdict_label": "注意",
+      "reason": null, "evidence": null, "note": null, "action": null,
+      "from": "synthetic[1]"
+    },
+    {
+      "id": "synthetic.failed", "name": "合成の項目(測れなかった)", "unit": "%",
+      "status": "failed", "value": null, "confidence": null,
+      "verdict": null, "verdict_raw": null, "verdict_label": null,
+      "reason": "合成の理由\n2行目", "evidence": null, "note": null, "action": null,
+      "from": "synthetic.failed"
+    },
+    {
+      "id": "synthetic.unchecked", "name": "合成の項目(未チェック)", "unit": null,
+      "status": "unchecked", "value": null, "confidence": null,
+      "verdict": null, "verdict_raw": null, "verdict_label": null,
+      "reason": "合成の理由(測っていない)", "evidence": null, "note": null, "action": null,
+      "from": "synthetic.unchecked"
+    },
+    {
+      "id": "synthetic.not_applicable", "name": "合成の項目(対象外)", "unit": null,
+      "status": "not_applicable", "value": null, "confidence": null,
+      "verdict": null, "verdict_raw": null, "verdict_label": null,
+      "reason": "合成の理由(部品が無い)", "evidence": null, "note": null, "action": null,
+      "from": "synthetic.not_applicable"
+    },
+    {
+      "id": "synthetic.ok", "name": "合成の項目(正常)", "unit": null,
+      "status": "measured", "value": false, "confidence": "measured",
+      "verdict": "ok", "verdict_raw": false, "verdict_label": "問題なし",
+      "reason": null, "evidence": null, "note": null, "action": null,
+      "from": "synthetic.ok"
+    },
+    {
+      "id": "synthetic.none.reference", "name": "合成の項目(判定なし・参考値)", "unit": null,
+      "status": "measured", "value": 3000, "confidence": "reference",
+      "verdict": "none", "verdict_raw": null, "verdict_label": null,
+      "reason": null, "evidence": null, "note": null, "action": null,
+      "from": "synthetic.none.reference"
+    },
+    {
+      "id": "synthetic.none.reported", "name": "合成の項目(判定なし・申告)", "unit": null,
+      "status": "measured", "value": "合成の答え", "confidence": "reported",
+      "verdict": "none", "verdict_raw": null, "verdict_label": null,
+      "reason": null, "evidence": null, "note": null, "action": null,
+      "from": "synthetic.none.reported"
+    }
+  ]
+}

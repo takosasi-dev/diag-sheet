@@ -1,0 +1,25 @@
+# 既定の出力先(実測から作ったシートが入るので、リポジトリに入れない)
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# 道具のキャッシュ
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# エディタ・OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store

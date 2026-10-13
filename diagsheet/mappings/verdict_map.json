@@ -1,0 +1,19 @@
+{
+  "_note": "仕様書 §8.5 の判定の対応表。2026-10-13 時点の仮決めで、依頼者の確認待ち。DiagSheet は判定を足さず、この表で写すだけ。表に無い値が来たら変換を止める(終了コード 2)。match が first_char の行は元の値の先頭1文字で見る。label が null の行は元の文をそのまま表示語にする。PadLab の行は未決定なので無い。",
+  "bad_word": "異常",
+  "tools": {
+    "stutter": [
+      {"field": "severity", "match": "exact", "raw": "high", "label": "要対処", "verdict": "bad"},
+      {"field": "severity", "match": "exact", "raw": "medium", "label": "注意", "verdict": "warn"},
+      {"field": "severity", "match": "exact", "raw": "ok", "label": "正常", "verdict": "ok"}
+    ],
+    "netdiag": [
+      {"field": "jitter.quality", "match": "first_char", "raw": "優", "label": null, "verdict": "ok"},
+      {"field": "jitter.quality", "match": "first_char", "raw": "良", "label": null, "verdict": "ok"},
+      {"field": "jitter.quality", "match": "first_char", "raw": "可", "label": null, "verdict": "warn"},
+      {"field": "jitter.quality", "match": "first_char", "raw": "不", "label": null, "verdict": "bad"},
+      {"field": "dnsbl.has_problem", "match": "exact", "raw": true, "label": "問題あり", "verdict": "bad"},
+      {"field": "dnsbl.has_problem", "match": "exact", "raw": false, "label": "問題なし", "verdict": "ok"}
+    ]
+  }
+}

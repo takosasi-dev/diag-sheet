@@ -1,0 +1,38 @@
+{
+  "label": "synthetic partial",
+  "timestamp": "2026-01-02T03:04:05",
+  "wifi": {"available": false, "reason": "合成の Wi-Fi の理由", "ssid": "SYNTH-SSID"},
+  "ipv6": {"global_addresses": [], "has_global_address": false, "default_route": null, "has_default_route": false, "egress_reachable": null},
+  "gateway_ip": null,
+  "latency": {
+    "1.1.1.1": {"loss_pct": 100, "min_ms": null, "max_ms": null, "avg_ms": null},
+    "8.8.8.8": {"error": "合成の ping エラー"}
+  },
+  "public_ip_info": {"ip": "203.0.113.7", "org": "SYNTH-ISP"},
+  "path_mtu": {"error": "合成の MTU エラー"},
+  "jitter": {"error": "有効なサンプルが不足", "lost": 20, "count": 20},
+  "link_stats": {"tcp_error": "合成の netstat エラー", "adapters": [{"Name": "SYNTH-ADAPTER"}]},
+  "nat": {"error": "合成の STUN エラー"},
+  "throughput": {"single": {"error": "HTTP 429"}, "parallel6": {"mbps": 0.0, "bytes": 0, "elapsed_s": 8.0, "streams": 6}},
+  "upload": {"single": {"mbps": 10.5, "bytes": 1000, "elapsed_s": 8.0}, "parallel6": {"error": "合成の上りエラー"}},
+  "time_sync": {"error": "合成の NTP エラー", "samples": []},
+  "quic": {"hosts": [], "usable": false, "verdict": "合成の QUIC の文"},
+  "dnsbl": {"error": "合成の DNSBL エラー", "ip": null},
+  "bufferbloat": {
+    "idle_latency": {"loss_pct": 0, "min_ms": 8, "max_ms": 12, "avg_ms": 10},
+    "loaded_latency": {"error": "合成の負荷時エラー"},
+    "increase_ms": null,
+    "increase_pct": null,
+    "rpm_approx": null,
+    "rpm_note": "合成の RPM 注記"
+  },
+  "grade": {
+    "grade": "?",
+    "score": null,
+    "breakdown": [
+      {"項目": "下り速度(契約比)", "実測": "測定不可", "点": null, "満点": 25},
+      {"項目": "TCP再送率", "実測": "測定不可", "点": null, "満点": 5}
+    ],
+    "comment": "採点できる項目がありませんでした"
+  }
+}
